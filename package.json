@@ -44,6 +44,9 @@
   },
   "dependencies": {
     "@tanstack/svelte-query": "^5.62.12",
-    "axios": "^1.7.9"
+    "@types/js-cookie": "^3.0.6",
+    "axios": "^1.7.9",
+    "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0"
   }
 }
