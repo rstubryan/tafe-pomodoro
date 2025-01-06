@@ -1,2 +1,14 @@
-<h1 class="text-4xl text-red-900 font-medium">Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script>
+	import Typography from '$lib/components/atoms/Typography/index.svelte';
+	import { Button } from '$lib/components/ui/button';
+</script>
+
+<Typography>Welcome to SvelteKit</Typography>
+<div class="flex gap-2">
+	<a href="login">
+		<Button>Login</Button>
+	</a>
+	<a href="register">
+		<Button>Register</Button>
+	</a>
+</div>
