@@ -20,25 +20,29 @@ const fetchUser = async <T>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url: stri
 		}
 	};
 
-	let response;
-	switch (method) {
-		case 'GET':
-			response = await AxiosInstance.get(url);
-			break;
-		case 'POST':
-			response = await AxiosInstance.post(url, data, config);
-			break;
-		case 'PUT':
-			response = await AxiosInstance.put(url, data, config);
-			break;
-		case 'DELETE':
-			response = await AxiosInstance.delete(url, config);
-			break;
-		default:
-			throw new Error('Invalid method');
+	try {
+		let response;
+		switch (method) {
+			case 'GET':
+				response = await AxiosInstance.get(url);
+				break;
+			case 'POST':
+				response = await AxiosInstance.post(url, data, config);
+				break;
+			case 'PUT':
+				response = await AxiosInstance.put(url, data, config);
+				break;
+			case 'DELETE':
+				response = await AxiosInstance.delete(url, config);
+				break;
+			default:
+				throw new Error('Invalid method');
+		}
+		return response.data;
+	} catch (error) {
+		console.error('Error fetching user data:', error);
+		throw error;
 	}
-
-	return response.data;
 };
 
 export default fetchUser;
