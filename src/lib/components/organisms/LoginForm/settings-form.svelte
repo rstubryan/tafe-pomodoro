@@ -3,44 +3,33 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { formSchema, type FormSchema } from '$/routes/(auth)/login/schema';
-	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { useQueryClient } from '@tanstack/svelte-query';
-	import { useAuthMutation } from '$api/auth/mutation';
+	import { type SuperValidated, type Infer } from 'sveltekit-superforms';
 	import { LoaderCircle } from 'lucide-svelte';
+	import { useForm } from '$lib/hooks/useForm';
+	import { useAuthMutation } from '$api/auth/mutation';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
-
-	const form = superForm(data, {
-		validators: zodClient(formSchema)
-	});
-
-	const { form: formData, enhance } = form;
-
-	const client = useQueryClient();
-	let errorMessage = '';
+	let {
+		form,
+		formData,
+		enhance,
+		isSubmitting,
+		errorMessage,
+		client,
+		validateForm,
+		handleMutation
+	} = useForm(data, formSchema);
+	$: isFormValid = validateForm($formData);
 	const authMutation = useAuthMutation(client, (message) => (errorMessage = message));
-
-	let isSubmitting = false;
-
 	const handleSubmit = async (event: Event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		isSubmitting = true;
-		try {
-			await $authMutation.mutateAsync({
+		await handleMutation(event, () =>
+			$authMutation.mutate({
 				type: 'login',
 				username: $formData.username,
 				password: $formData.password
-			});
-		} catch (error) {
-			console.error('Error during form submission:', error);
-		} finally {
-			isSubmitting = false;
-		}
+			})
+		);
 	};
-
-	$: isFormValid = formSchema.safeParse($formData).success;
 </script>
 
 <Card.Root>
@@ -54,7 +43,7 @@
 			{/if}
 			<Form.Field {form} name="username">
 				<Form.Control let:attrs>
-					<Form.Label>Username</Form.Label>
+					<Form.Label for="username">Username</Form.Label>
 					<Input type="text" {...attrs} bind:value={$formData.username} />
 				</Form.Control>
 				<Form.FieldErrors />
@@ -76,10 +65,10 @@
 				<Form.Button class="w-full" disabled={!isFormValid}>Submit</Form.Button>
 			{/if}
 		</Card.Footer>
+		<div class="mb-6 text-center">
+			<p>
+				Don't have an account? <a class="font-semibold text-primary" href="/register">Register</a>
+			</p>
+		</div>
 	</form>
-	<div class="mb-6 text-center">
-		<p>
-			Don't have an account? <a class="font-semibold text-primary" href="/register">Register</a>
-		</p>
-	</div>
 </Card.Root>
