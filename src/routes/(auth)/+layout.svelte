@@ -1,20 +1,9 @@
 <script lang="ts">
-	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
-	import { browser } from '$app/environment';
-
-	let { children } = $props();
-
-	const queryClient = new QueryClient({
-		defaultOptions: {
-			queries: {
-				enabled: browser
-			}
-		}
-	});
+	import QueryClientContainer from '$lib/components/templates/QueryClientContainer.svelte';
 </script>
 
-<QueryClientProvider client={queryClient}>
-	<div class="mx-auto grid min-h-screen max-w-xl items-center">
-		{@render children()}
-	</div>
-</QueryClientProvider>
+<QueryClientContainer>
+	<main class="mx-auto grid min-h-screen max-w-xl items-center">
+		<slot />
+	</main>
+</QueryClientContainer>
