@@ -17,10 +17,6 @@ export const actions: Actions = {
 			return fail(400, {
 				form
 			});
-		} else {
-			return {
-				form
-			};
 		}
 	}
 };
