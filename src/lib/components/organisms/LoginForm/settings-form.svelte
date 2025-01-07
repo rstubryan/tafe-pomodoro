@@ -5,7 +5,8 @@
 	import { formSchema, type FormSchema } from '$/routes/(auth)/login/schema';
 	import { type SuperValidated, type Infer, superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { useAuthMutation } from '$/routes/api/auth/mutation';
+	import { useQueryClient } from '@tanstack/svelte-query';
+	import { useAuthMutation } from '$api/auth/mutation';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 
@@ -14,12 +15,22 @@
 	});
 
 	const { form: formData, enhance } = form;
-	const { mutate } = useAuthMutation();
+
+	const client = useQueryClient();
+	const authMutation = useAuthMutation(client);
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
-		const { username, password } = $formData;
-		mutate({ type: 'login', username, password });
+		event.stopPropagation();
+		try {
+			$authMutation.mutate({
+				type: 'login',
+				username: $formData.username,
+				password: $formData.password
+			});
+		} catch (error) {
+			console.error('Error during form submission:', error);
+		}
 	};
 </script>
 
@@ -27,12 +38,12 @@
 	<Card.Header>
 		<Card.Title class="text-center text-2xl font-medium">Login</Card.Title>
 	</Card.Header>
-	<form method="POST" use:enhance on:submit={handleSubmit}>
+	<form method="POST" use:enhance onsubmit={handleSubmit}>
 		<Card.Content>
 			<Form.Field {form} name="username">
 				<Form.Control let:attrs>
 					<Form.Label>Username</Form.Label>
-					<Input type="username" {...attrs} bind:value={$formData.username} />
+					<Input type="text" {...attrs} bind:value={$formData.username} />
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
@@ -48,4 +59,9 @@
 			<Form.Button class="w-full">Submit</Form.Button>
 		</Card.Footer>
 	</form>
+	<div class="mb-6 text-center">
+		<p>
+			Don't have an account? <a class="font-semibold text-primary" href="/register">Register</a>
+		</p>
+	</div>
 </Card.Root>

@@ -1,5 +1,5 @@
 import type { PageServerLoad, Actions } from './$types.js';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { formSchema } from './schema';
@@ -17,8 +17,6 @@ export const actions: Actions = {
 			return fail(400, {
 				form
 			});
-		} else {
-			return redirect(303, '/');
 		}
 	}
 };
