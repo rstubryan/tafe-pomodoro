@@ -16,6 +16,7 @@ const config = {
 		alias: {
 			$: path.resolve('src'),
 			$lib: path.resolve('src/lib'),
+			$routes: path.resolve('src/routes'),
 			$api: path.resolve('src/routes/api')
 		}
 	}
