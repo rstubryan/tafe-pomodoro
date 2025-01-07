@@ -1,8 +1,9 @@
 import { AxiosInstance } from '../base/axiosInstance';
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
-import { createMutation } from '@tanstack/svelte-query';
+import { createMutation, QueryClient } from '@tanstack/svelte-query';
 import { goto } from '$app/navigation';
+import type { AxiosError } from 'axios';
 
 interface AuthProps {
 	type: 'login' | 'register';
@@ -18,7 +19,10 @@ const auth = async (data: AuthProps) => {
 	return response.data;
 };
 
-export const useAuthMutation = (client: never) => {
+export const useAuthMutation = (
+	client: QueryClient,
+	setErrorMessage: (message: string) => void
+) => {
 	return createMutation({
 		mutationKey: ['auth'],
 		mutationFn: auth,
@@ -38,9 +42,13 @@ export const useAuthMutation = (client: never) => {
 			}
 			client.invalidateQueries({ queryKey: ['auth'] });
 		},
-		onError: (error) => {
-			console.error('Authentication failed:', error.message);
-			alert(error.response.data.error);
+		onError: (error: Error) => {
+			const axiosError = error as AxiosError;
+			if (axiosError.response) {
+				setErrorMessage((axiosError.response.data as { error: string }).error);
+			} else {
+				setErrorMessage('An unknown error occurred');
+			}
 		}
 	});
 };
