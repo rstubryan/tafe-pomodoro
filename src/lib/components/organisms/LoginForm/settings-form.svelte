@@ -7,6 +7,7 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { useQueryClient } from '@tanstack/svelte-query';
 	import { useAuthMutation } from '$api/auth/mutation';
+	import { LoaderCircle } from 'lucide-svelte';
 
 	export let data: SuperValidated<Infer<FormSchema>>;
 
@@ -17,21 +18,29 @@
 	const { form: formData, enhance } = form;
 
 	const client = useQueryClient();
-	const authMutation = useAuthMutation(client);
+	let errorMessage = '';
+	const authMutation = useAuthMutation(client, (message) => (errorMessage = message));
+
+	let isSubmitting = false;
 
 	const handleSubmit = async (event: Event) => {
 		event.preventDefault();
 		event.stopPropagation();
+		isSubmitting = true;
 		try {
-			$authMutation.mutate({
+			await $authMutation.mutateAsync({
 				type: 'login',
 				username: $formData.username,
 				password: $formData.password
 			});
 		} catch (error) {
 			console.error('Error during form submission:', error);
+		} finally {
+			isSubmitting = false;
 		}
 	};
+
+	$: isFormValid = formSchema.safeParse($formData).success;
 </script>
 
 <Card.Root>
@@ -40,6 +49,9 @@
 	</Card.Header>
 	<form method="POST" use:enhance onsubmit={handleSubmit}>
 		<Card.Content>
+			{#if errorMessage}
+				<div class="mb-4 text-red-500">{errorMessage}</div>
+			{/if}
 			<Form.Field {form} name="username">
 				<Form.Control let:attrs>
 					<Form.Label>Username</Form.Label>
@@ -56,7 +68,13 @@
 			</Form.Field>
 		</Card.Content>
 		<Card.Footer>
-			<Form.Button class="w-full">Submit</Form.Button>
+			{#if isSubmitting}
+				<Form.Button class="w-full animate-pulse">
+					<LoaderCircle class="animate-spin" />
+				</Form.Button>
+			{:else}
+				<Form.Button class="w-full" disabled={!isFormValid}>Submit</Form.Button>
+			{/if}
 		</Card.Footer>
 	</form>
 	<div class="mb-6 text-center">
