@@ -15,7 +15,8 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$: path.resolve('src'),
-			$lib: path.resolve('src/lib')
+			$lib: path.resolve('src/lib'),
+			$api: path.resolve('src/routes/api')
 		}
 	}
 };
