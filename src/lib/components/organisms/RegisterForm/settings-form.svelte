@@ -2,7 +2,7 @@
 	import * as Form from '$lib/components/ui/form';
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
-	import { formSchema, type FormSchema } from '$/routes/(auth)/register/schema';
+	import { formSchema, type FormSchema } from '$routes/(auth)/register/schema';
 	import { type SuperValidated, type Infer } from 'sveltekit-superforms';
 	import { LoaderCircle } from 'lucide-svelte';
 	import { useForm } from '$lib/hooks/useForm';
