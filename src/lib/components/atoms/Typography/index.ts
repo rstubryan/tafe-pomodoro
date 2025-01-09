@@ -1,13 +1,9 @@
-import Root, {
-	type TypographyProps,
-	type TypographyVariant,
-	typographyVariants
-} from './typography.svelte';
+import Root, { typographyVariants } from './typography.svelte';
+import type { TypographyProps, TypographyVariant } from './type';
 
 export {
 	Root,
 	type TypographyProps as Props,
-	//
 	Root as Typography,
 	typographyVariants,
 	type TypographyProps,
