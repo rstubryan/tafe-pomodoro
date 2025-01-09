@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { useLogout } from '$lib/hooks/useLogout';
 
-	async function handleLogout() {
+	function handleLogout() {
 		useLogout()();
 	}
 </script>
