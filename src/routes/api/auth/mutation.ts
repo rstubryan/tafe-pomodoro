@@ -1,16 +1,9 @@
 import { AxiosInstance } from '../base/axiosInstance';
 import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
 import { createMutation, QueryClient } from '@tanstack/svelte-query';
 import { goto } from '$app/navigation';
+import type { AuthProps } from './type';
 import type { AxiosError } from 'axios';
-
-interface AuthProps {
-	type: 'login' | 'register';
-	username: string;
-	password: string;
-	email?: string;
-}
 
 const auth = async (data: AuthProps) => {
 	const { type, ...rest } = data;
@@ -30,10 +23,8 @@ export const useAuthMutation = (
 			if (variables.type === 'login') {
 				const token = data.token;
 				Cookies.set('token', token, { expires: 1 });
-				const decoded = jwtDecode(token);
-				Cookies.set('user', JSON.stringify(decoded), { expires: 1 });
 				alert(data.message);
-				goto('/');
+				goto('/dashboard');
 			} else {
 				alert(data.message);
 				if (confirm('Do you want to login now?')) {
