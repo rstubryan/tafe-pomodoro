@@ -2,6 +2,7 @@ import { zodClient } from 'sveltekit-superforms/adapters';
 import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
 import type { ZodSchema } from 'zod';
 import { useQueryClient } from '@tanstack/svelte-query';
+import { writable } from 'svelte/store';
 
 export function useForm<T extends ZodSchema>(data: SuperValidated<Infer<T>>, formSchema: T) {
 	type FormData = Record<string, never>;
@@ -12,7 +13,7 @@ export function useForm<T extends ZodSchema>(data: SuperValidated<Infer<T>>, for
 
 	const { form: formData, enhance } = form;
 	let isSubmitting = false;
-	const errorMessage = '';
+	const responseMessage = writable('');
 	const client = useQueryClient();
 	const validateForm = (data: FormData) => formSchema.safeParse(data).success;
 	const handleMutation = async (event: Event, mutationFn: () => void) => {
@@ -33,7 +34,7 @@ export function useForm<T extends ZodSchema>(data: SuperValidated<Infer<T>>, for
 		formData,
 		enhance,
 		isSubmitting,
-		errorMessage,
+		responseMessage,
 		client,
 		validateForm,
 		handleMutation

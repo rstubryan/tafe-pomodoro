@@ -4,4 +4,4 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<SettingsForm data={data.form} />
+<SettingsForm {data} />

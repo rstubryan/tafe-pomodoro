@@ -7,26 +7,35 @@
 	import { LoaderCircle } from 'lucide-svelte';
 	import { useForm } from '$lib/hooks/useForm';
 	import { useAuthMutation } from '$api/auth/mutation';
+	import { get } from 'svelte/store';
 
-	export let data: SuperValidated<Infer<FormSchema>>;
+	let {
+		data,
+		isFormValid
+	}: { data: { form: SuperValidated<Infer<FormSchema>> }; isFormValid?: boolean } = $props();
+
 	let {
 		form,
 		formData,
 		enhance,
 		isSubmitting,
-		errorMessage,
+		responseMessage,
 		client,
 		validateForm,
 		handleMutation
-	} = useForm(data, formSchema);
-	$: isFormValid = validateForm($formData);
-	const authMutation = useAuthMutation(client, (message) => (errorMessage = message));
+	} = useForm(data.form, formSchema);
+
+	$effect(() => {
+		isFormValid = validateForm($formData);
+	});
+
+	const authMutation = useAuthMutation(client, (message) => responseMessage.set(message));
 	const handleSubmit = async (event: Event) => {
 		await handleMutation(event, () =>
 			$authMutation.mutate({
 				type: 'login',
-				username: $formData.username,
-				password: $formData.password
+				username: get(formData).username,
+				password: get(formData).password
 			})
 		);
 	};
@@ -38,20 +47,24 @@
 	</Card.Header>
 	<form method="POST" use:enhance onsubmit={handleSubmit}>
 		<Card.Content>
-			{#if errorMessage}
-				<div class="mb-4 text-red-500">{errorMessage}</div>
+			{#if $responseMessage}
+				<div class="mb-4 text-red-500">{$responseMessage}</div>
 			{/if}
 			<Form.Field {form} name="username">
-				<Form.Control let:attrs>
-					<Form.Label for="username">Username</Form.Label>
-					<Input type="text" {...attrs} bind:value={$formData.username} />
+				<Form.Control>
+					{#snippet children({ props })}
+						<Form.Label for="username">Username</Form.Label>
+						<Input {...props} type="text" bind:value={$formData.username} />
+					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
 			<Form.Field {form} name="password">
-				<Form.Control let:attrs>
-					<Form.Label>Password</Form.Label>
-					<Input type="password" {...attrs} bind:value={$formData.password} />
+				<Form.Control>
+					{#snippet children({ props })}
+						<Form.Label>Password</Form.Label>
+						<Input {...props} type="password" bind:value={$formData.password} />
+					{/snippet}
 				</Form.Control>
 				<Form.FieldErrors />
 			</Form.Field>
