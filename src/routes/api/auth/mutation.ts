@@ -4,6 +4,7 @@ import { createMutation, QueryClient } from '@tanstack/svelte-query';
 import { goto } from '$app/navigation';
 import type { AuthProps } from './type';
 import type { AxiosError } from 'axios';
+import { toast } from 'svelte-sonner';
 
 const auth = async (data: AuthProps) => {
 	const { type, ...rest } = data;
@@ -23,22 +24,37 @@ export const useAuthMutation = (
 			if (variables.type === 'login') {
 				const token = data.token;
 				Cookies.set('token', token, { expires: 1 });
-				alert(data.message);
-				goto('/dashboard');
+				toast.success(data.message, {
+					description: 'You have successfully logged in.'
+				});
+				setTimeout(() => {
+					goto('/dashboard');
+				}, 3000);
 			} else {
-				alert(data.message);
-				if (confirm('Do you want to login now?')) {
-					goto('/login');
-				}
+				toast.success(data.message, {
+					description: 'You have successfully signed up.',
+					action: {
+						label: 'Login Now',
+						onClick: () => goto('/login')
+					}
+				});
 			}
 			client.invalidateQueries({ queryKey: ['auth'] });
 		},
 		onError: (error: Error) => {
 			const axiosError = error as AxiosError;
 			if (axiosError.response) {
-				setErrorMessage((axiosError.response.data as { error: string }).error);
+				const errorMessage = (axiosError.response.data as { error: string }).error;
+				setErrorMessage(errorMessage);
+				toast.error(errorMessage, {
+					description: 'Please check your credentials and try again.'
+				});
 			} else {
-				setErrorMessage('An unknown error occurred');
+				const errorMessage = 'An unknown error occurred';
+				setErrorMessage(errorMessage);
+				toast.error(errorMessage, {
+					description: 'Please try again later.'
+				});
 			}
 		}
 	});

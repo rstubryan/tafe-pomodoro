@@ -30,7 +30,9 @@
 		isFormValid = validateForm($formData);
 	});
 
-	const authMutation = useAuthMutation(client, (message) => responseMessage.set(message));
+	const authMutation = useAuthMutation(client, (message) => {
+		responseMessage.set(message);
+	});
 	const handleSubmit = async (event: Event) => {
 		await handleMutation(event, () =>
 			$authMutation.mutate({
