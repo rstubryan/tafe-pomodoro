@@ -8,6 +8,7 @@
 	import { useForm } from '$lib/hooks/useForm';
 	import { useAuthMutation } from '$api/auth/mutation';
 	import { get } from 'svelte/store';
+	import { Typography } from '../../atoms/Typography';
 
 	let {
 		data,
@@ -88,10 +89,8 @@
 				<Form.Button class="w-full" disabled={!isFormValid}>Submit</Form.Button>
 			{/if}
 		</Card.Footer>
-		<div class="mb-6 text-center">
-			<p>
-				Already have an account? <a class="font-semibold text-primary" href="/login">Login</a>
-			</p>
-		</div>
+		<Typography className="mb-6 text-center">
+			Already have an account? <a class="font-semibold text-primary" href="/login">Login</a>
+		</Typography>
 	</form>
 </Card.Root>
