@@ -4,6 +4,6 @@
 	let { children, className = '', ...restProps } = $props();
 </script>
 
-<div class={cn('container mx-auto', className)} {...restProps}>
+<div class={cn('', className)} {...restProps}>
 	{@render children?.()}
 </div>
